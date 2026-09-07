@@ -1,165 +1,344 @@
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
+private static String createPage(String result) {
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
+    return """
+            <!DOCTYPE html>
+            <html lang="en">
 
-public class App {
+            <head>
 
-    public static void main(String[] args) throws Exception {
+                <meta charset="UTF-8">
+                <meta name="viewport"
+                      content="width=device-width, initial-scale=1.0">
 
-        int port = 8081;
+                <title>Java Calculator</title>
 
-        HttpServer server =
-                HttpServer.create(new InetSocketAddress(port), 0);
+                <style>
 
-        server.createContext("/", App::handleRequest);
+                    * {
+                        margin: 0;
+                        padding: 0;
+                        box-sizing: border-box;
+                    }
 
-        server.setExecutor(null);
+                    body {
+                        font-family: Arial, Helvetica, sans-serif;
 
-        System.out.println("Calculator application started");
-        System.out.println("Application running on port " + port);
+                        min-height: 100vh;
 
-        server.start();
-    }
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
 
-    private static void handleRequest(HttpExchange exchange)
-            throws IOException {
+                        background:
+                            linear-gradient(
+                                135deg,
+                                #667eea,
+                                #764ba2
+                            );
 
-        String query = exchange.getRequestURI().getQuery();
+                        padding: 20px;
+                    }
 
-        String html;
+                    .calculator {
+                        width: 100%;
+                        max-width: 450px;
 
-        if (query != null && query.contains("first")) {
+                        background: rgba(255, 255, 255, 0.95);
 
-            String[] values = query.split("&");
+                        padding: 35px;
 
-            int first = Integer.parseInt(
-                    URLDecoder.decode(values[0].split("=")[1],
-                            StandardCharsets.UTF_8)
-            );
+                        border-radius: 25px;
 
-            int second = Integer.parseInt(
-                    URLDecoder.decode(values[1].split("=")[1],
-                            StandardCharsets.UTF_8)
-            );
+                        box-shadow:
+                            0 20px 50px rgba(0, 0, 0, 0.25);
 
-            if (second == 0) {
+                        text-align: center;
+                    }
 
-                html = createPage(
-                        "Division by zero is not allowed"
-                );
+                    .icon {
+                        width: 70px;
+                        height: 70px;
 
-            } else {
+                        margin: 0 auto 15px;
 
-                int add = first + second;
-                int sub = first - second;
-                int mul = first * second;
-                int div = first / second;
+                        border-radius: 50%;
 
-                html = createPage(
-                        "<h2>Calculation Result</h2>" +
-                        "<p>Addition: " + add + "</p>" +
-                        "<p>Subtraction: " + sub + "</p>" +
-                        "<p>Multiplication: " + mul + "</p>" +
-                        "<p>Division: " + div + "</p>"
-                );
-            }
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
 
-        } else {
+                        background:
+                            linear-gradient(
+                                135deg,
+                                #667eea,
+                                #764ba2
+                            );
 
-            html = createPage("");
-        }
+                        color: white;
 
-        exchange.getResponseHeaders()
-                .set("Content-Type", "text/html");
+                        font-size: 35px;
 
-        exchange.sendResponseHeaders(
-                200,
-                html.getBytes(StandardCharsets.UTF_8).length
-        );
+                        box-shadow:
+                            0 8px 20px rgba(102, 126, 234, 0.4);
+                    }
 
-        OutputStream output = exchange.getResponseBody();
+                    h1 {
+                        color: #222;
 
-        output.write(
-                html.getBytes(StandardCharsets.UTF_8)
-        );
+                        font-size: 30px;
 
-        output.close();
-    }
+                        margin-bottom: 8px;
+                    }
 
+                    .subtitle {
+                        color: #777;
 
-    private static String createPage(String result) {
+                        font-size: 14px;
 
-        return """
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Java Calculator</title>
+                        margin-bottom: 30px;
+                    }
 
-                    <style>
-                        body {
-                            font-family: Arial;
-                            text-align: center;
-                            margin-top: 50px;
+                    .input-group {
+                        text-align: left;
+
+                        margin-bottom: 18px;
+                    }
+
+                    label {
+                        display: block;
+
+                        margin-bottom: 7px;
+
+                        font-size: 14px;
+
+                        font-weight: bold;
+
+                        color: #444;
+                    }
+
+                    input {
+                        width: 100%;
+
+                        padding: 15px;
+
+                        border: 2px solid #e1e1e1;
+
+                        border-radius: 12px;
+
+                        font-size: 17px;
+
+                        outline: none;
+
+                        transition: 0.3s;
+                    }
+
+                    input:focus {
+                        border-color: #667eea;
+
+                        box-shadow:
+                            0 0 0 4px
+                            rgba(102, 126, 234, 0.12);
+                    }
+
+                    input::placeholder {
+                        color: #aaa;
+                    }
+
+                    button {
+                        width: 100%;
+
+                        margin-top: 10px;
+
+                        padding: 15px;
+
+                        border: none;
+
+                        border-radius: 12px;
+
+                        background:
+                            linear-gradient(
+                                135deg,
+                                #667eea,
+                                #764ba2
+                            );
+
+                        color: white;
+
+                        font-size: 17px;
+
+                        font-weight: bold;
+
+                        cursor: pointer;
+
+                        transition: 0.3s;
+
+                        box-shadow:
+                            0 8px 18px
+                            rgba(102, 126, 234, 0.35);
+                    }
+
+                    button:hover {
+                        transform: translateY(-2px);
+
+                        box-shadow:
+                            0 12px 25px
+                            rgba(102, 126, 234, 0.45);
+                    }
+
+                    button:active {
+                        transform: translateY(0);
+                    }
+
+                    .result {
+                        margin-top: 28px;
+
+                        padding: 20px;
+
+                        border-radius: 15px;
+
+                        background: #f7f8ff;
+
+                        border: 1px solid #e2e5ff;
+
+                        color: #333;
+
+                        font-size: 18px;
+
+                        text-align: left;
+                    }
+
+                    .result h2 {
+                        text-align: center;
+
+                        color: #667eea;
+
+                        margin-bottom: 15px;
+
+                        font-size: 21px;
+                    }
+
+                    .result p {
+                        padding: 10px 12px;
+
+                        margin: 7px 0;
+
+                        background: white;
+
+                        border-radius: 8px;
+
+                        box-shadow:
+                            0 2px 6px
+                            rgba(0, 0, 0, 0.05);
+                    }
+
+                    .footer {
+                        margin-top: 25px;
+
+                        font-size: 12px;
+
+                        color: #999;
+                    }
+
+                    .error {
+                        color: #d93025;
+
+                        background: #fff1f0;
+
+                        border: 1px solid #ffd6d2;
+
+                        padding: 15px;
+
+                        border-radius: 10px;
+
+                        text-align: center;
+
+                        font-weight: bold;
+                    }
+
+                    @media (max-width: 500px) {
+
+                        .calculator {
+                            padding: 25px;
                         }
 
-                        input {
-                            padding: 10px;
-                            margin: 8px;
+                        h1 {
+                            font-size: 25px;
                         }
 
-                        button {
-                            padding: 10px 25px;
-                            cursor: pointer;
-                        }
+                    }
 
-                        .result {
-                            margin-top: 25px;
-                            font-size: 20px;
-                        }
-                    </style>
-                </head>
+                </style>
 
-                <body>
+            </head>
+
+            <body>
+
+                <div class="calculator">
+
+                    <div class="icon">
+                        🧮
+                    </div>
 
                     <h1>Java Calculator</h1>
 
+                    <p class="subtitle">
+                        Simple Web Calculator powered by Java
+                    </p>
+
                     <form method="GET">
 
-                        <input
-                            type="number"
-                            name="first"
-                            placeholder="First Number"
-                            required
-                        >
+                        <div class="input-group">
 
-                        <br>
+                            <label>
+                                First Number
+                            </label>
 
-                        <input
-                            type="number"
-                            name="second"
-                            placeholder="Second Number"
-                            required
-                        >
+                            <input
+                                type="number"
+                                name="first"
+                                placeholder="Enter first number"
+                                required
+                            >
 
-                        <br>
+                        </div>
+
+                        <div class="input-group">
+
+                            <label>
+                                Second Number
+                            </label>
+
+                            <input
+                                type="number"
+                                name="second"
+                                placeholder="Enter second number"
+                                required
+                            >
+
+                        </div>
 
                         <button type="submit">
-                            Calculate
+                            Calculate ✨
                         </button>
 
                     </form>
 
                     <div class="result">
+
                         %s
+
                     </div>
 
-                </body>
-                </html>
-                """.formatted(result);
-    }
+                    <div class="footer">
+
+                        Java HTTP Server • Port 8081
+
+                    </div>
+
+                </div>
+
+            </body>
+
+            </html>
+            """.formatted(result);
 }
